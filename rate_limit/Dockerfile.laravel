@@ -1,0 +1,13 @@
+FROM php:8.4-cli
+
+RUN apt-get update && apt-get install -y git unzip libzip-dev \
+    && docker-php-ext-install zip
+
+# Install Composer
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+    && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
+    && php -r "unlink('composer-setup.php');"
+
+WORKDIR /var/www/html
+
+CMD sh -c "if [ ! -f artisan ]; then composer create-project --prefer-dist laravel/laravel .; else composer install --no-interaction --optimize-autoloader; fi && php artisan serve --host=0.0.0.0 --port=80"

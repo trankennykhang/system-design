@@ -13,6 +13,7 @@ services:
       - backend-service
     networks:
       - architecture_net
+  # LAYER 2: Load Balancer (Simulated by NGINX Proxy)
 
   # LAYER 3: The Multiple Servers Backend (Simulated by container scaling)
   backend-service:
@@ -22,6 +23,20 @@ services:
     command: sh -c "npm install express && node server.js"
     volumes:
       - ./backend:/usr/src/app
+    networks:
+      - architecture_net
+
+  laravel-service:
+    # This is a basic setup for a Laravel service, suitable for development.
+    # For production, a more robust setup with a dedicated web server (like Nginx)
+    # and PHP-FPM is recommended, often built into a custom Docker image.
+    build:
+      context: .
+      dockerfile: Dockerfile.laravel
+    container_name: local_laravel_app
+    working_dir: /var/www/html
+    volumes:
+      - ./laravel:/var/www/html # Assumes a 'laravel' directory with your app source
     networks:
       - architecture_net
 
